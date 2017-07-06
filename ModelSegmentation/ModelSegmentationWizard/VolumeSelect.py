@@ -1,15 +1,11 @@
-""" This is Step 1. The user selects the pre- and, if preferred, post-contrast volumes 
-	from which to construct a threshold ROI. TO-DO: Load test-case data.
+""" This is Step 1. The user selects the pre- and, if preferred, post-contrast
+	volumes.
 """
 
 from __main__ import qt, ctk, slicer
 
 from ModelSegmentationStep import *
 from Helper import *
-
-# Not sure why Editor libaries are being loaded in this step.h
-from Editor import EditorWidget
-from EditorLib import EditorLib
 
 """ VolumeSelectStep inherits from ModelSegmentationStep, with itself inherits
 	from a ctk workflow class. 
@@ -27,7 +23,6 @@ class VolumeSelectStep(ModelSegmentationStep) :
 
 		self.initialize( stepid )
 		self.setName( '1. Volume Selection' )
-		# self.setDescription( 'Choose the volume you would like to threshold. If you are calculating a subtraction map, check the \"Calculate Subtraction Map\" box and select a post-contrast image.' )
 
 		self.__parent = super(VolumeSelectStep, self)
 
@@ -36,8 +31,6 @@ class VolumeSelectStep(ModelSegmentationStep) :
 		""" This method uses qt to create a user interface. qMRMLNodeComboBox
 			is a drop down menu for picking MRML files. MRML files have to be
 			added to a "scene," i.e. the main Slicer container, hence setMRMLScene.
-			The basic Slicer module layout is inherited from this modules parent -
-			presumably something in core Slicer.
 		"""
 
 		self.__layout = self.__parent.createUserInterface()
@@ -83,7 +76,7 @@ class VolumeSelectStep(ModelSegmentationStep) :
 
 		self.updateWidgetFromParameters(self.parameterNode())
 
-		# I believe this timer a trick to wait for buttons to load BEFORE deleting them.
+		# This timer is a trick to wait for buttons to load BEFORE deleting them.
 		qt.QTimer.singleShot(0, self.killButton)
 
 	def setSubtractionMapping(self):
@@ -92,10 +85,9 @@ class VolumeSelectStep(ModelSegmentationStep) :
 
 	def validate( self, desiredBranchId ):
 
-		# Validate is called whenever one goes to a different step
 		self.__parent.validate( desiredBranchId )
 
-		# Check here that the selectors are not empty / the same
+		# Check that the selectors are not empty / the same
 		baseline = self.__baselineVolumeSelector.currentNode()
 		followup = self.__followupVolumeSelector.currentNode()
 
@@ -115,7 +107,7 @@ class VolumeSelectStep(ModelSegmentationStep) :
 				else:
 					self.__parent.validationFailed(desiredBranchId, 'Error','Please select distinctive pre- and post-contrast volumes.')
 			else:
-				self.__parent.validationFailed(desiredBranchId, 'Error','Please select pre- and post-contrast volumes if you wish to compute a subtraction map.')
+				self.__parent.validationFailed(desiredBranchId, 'Error','Please select pre- and post-contrast volumes if you wish to compute a subtraction map. Otherwise, uncheck "calculate subtraction map"')
 		else:
 			if baseline != None:
 				baselineID = baseline.GetID()
@@ -158,39 +150,13 @@ class VolumeSelectStep(ModelSegmentationStep) :
 		super(VolumeSelectStep, self).onEntry(comingFrom, transitionType)
 
 		self.updateWidgetFromParameters(self.parameterNode())
-		
-		# Find 'next' and 'back' buttons to control step flow in individual steps.
-		stepButtons = slicer.util.findChildren(className='ctkPushButton')
-		
-		backButton = ''
-		nextButton = ''
-		for stepButton in stepButtons:
-			if stepButton.text == 'Next':
-				nextButton = stepButton
-			if stepButton.text == 'Back':
-				backButton = stepButton
-
-		backButton.hide()
-
-		# ctk creates an unwanted final page button. This method gets rid of it.
-		bl = slicer.util.findChildren(text='ReviewStep')
-		if len(bl):
-			bl[0].hide()
 
 		pNode = self.parameterNode()
 		pNode.SetParameter('currentStep', self.stepid)
 
-		# A different attempt to get rid of the extra workflow button.
-		# Unsure why this line has to happen twice.. Should run some
-		# experiments to find out.
 		qt.QTimer.singleShot(0, self.killButton)
 
 	def onExit(self, goingTo, transitionType):   
-
-		# Need to check - if you go through to say, step 5, then go
-		# all the way back to step one and change the volumes to reset,
-		# then a piece of code should reset all parameter values at this point.
-		# Essentially, the module has been restarted, one imagines.
 
 		super(ModelSegmentationStep, self).onExit(goingTo, transitionType) 
 
@@ -204,7 +170,6 @@ class VolumeSelectStep(ModelSegmentationStep) :
 		pNode.SetParameter('originalFollowupVolumeID', '')
 
 		pNode.SetParameter('registrationVolumeID', '')
-
 		pNode.SetParameter('baselineNormalizeVolumeID', '')
 		pNode.SetParameter('followupNormalizeVolumeID', '')
 		pNode.SetParameter('subtractVolumeID', '')

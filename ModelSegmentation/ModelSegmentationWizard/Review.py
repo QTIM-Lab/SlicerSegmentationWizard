@@ -22,11 +22,6 @@ class ReviewStep( ModelSegmentationStep ) :
 
 	def __init__( self, stepid ):
 
-		""" This method creates a drop-down menu that includes the whole step.
-			The description also acts as a tooltip for the button. There may be 
-			some way to override this. The initialize method is inherited
-			from ctk.
-		"""
 		self.initialize( stepid )
 		self.setName( '6. Review' )
 
@@ -45,9 +40,6 @@ class ReviewStep( ModelSegmentationStep ) :
 		self.__RestartActivated = False
 
 	def createUserInterface( self ):
-
-		""" This step is mostly empty. A volume rendering threshold is added to be useful.
-		"""
 
 		self.__layout = self.__parent.createUserInterface()
 
@@ -142,20 +134,10 @@ class ReviewStep( ModelSegmentationStep ) :
 			self.EditorWidget.infoIconLabel.hide()
 		except:
 			pass
-		# Useful testing code
-		# for widgetName in slicer.util.findChildren(self.EditorWidget.editBoxFrame):
-		# for widgetName in slicer.util.findChildren(self.EditorWidget.helper):
-			# widget = slicer.util.findChildren(self.EditorWidget.editBoxFrame)
-			# print widgetName.objectName
-			# print widgetName.parent.name
-			# widgetName.hide()
-		# print slicer.util.findChildren('','EditColorFrame')
-
-		# for widget in ['DrawEffectToolButton', 'RectangleEffectToolButton', 'IdentifyIslandsEffectToolButton', 'RemoveIslandsEffectToolButton', 'SaveIslandEffectToolButton', 'RowFrame2']:
-		# 	slicer.util.findChildren(self.EditorWidget.editBoxFrame, widget)[0].hide()
 
 	def Restart( self ):
 
+		# Unclick any selected editor tools..
 		self.__DefaultToolButton.click()
 
 		pNode = self.parameterNode()
@@ -280,9 +262,6 @@ class ReviewStep( ModelSegmentationStep ) :
 
 		self.updateWidgetFromParameters(pNode)
 
-		# What does this do?
-		# self.__vrDisplayNode.VisibilityOn()
-
 		Helper.SetBgFgVolumes(self.__visualizedID,'')
 		Helper.SetLabelVolume(self.__thresholdedLabelNode.GetID())
 
@@ -293,9 +272,6 @@ class ReviewStep( ModelSegmentationStep ) :
 		qt.QTimer.singleShot(0, self.killButton)
 
 	def updateWidgetFromParameters(self, pNode):
-
-		# Many of these are obviously redundant. Not sure why they were
-		# all typed out in the first place.
 
 		self.__clippingModelNode = Helper.getNodeByID(pNode.GetParameter('clippingModelNodeID'))
 		self.__baselineVolumeID = pNode.GetParameter('baselineVolumeID')
@@ -317,11 +293,11 @@ class ReviewStep( ModelSegmentationStep ) :
 			self.__visualizedID = self.__followupVolumeID
 			self.__visualizedNode = self.__followupVolumeNode
 
-		vrRange = self.__visualizedNode.GetImageData().GetScalarRange()
+		# vrRange = self.__visualizedNode.GetImageData().GetScalarRange()
 
-		if self.__vrDisplayNode == None:
-			if self.__vrDisplayNodeID != '':
-				self.__vrDisplayNode = slicer.mrmlScene.GetNodeByID(self.__vrDisplayNodeID)
+		# if self.__vrDisplayNode == None:
+		# 	if self.__vrDisplayNodeID != '':
+		# 		self.__vrDisplayNode = slicer.mrmlScene.GetNodeByID(self.__vrDisplayNodeID)
 
 		# Replace this, most likely.
 		# self.__visualizedNode.AddAndObserveDisplayNodeID(self.__vrDisplayNode.GetID())
@@ -348,5 +324,4 @@ class ReviewStep( ModelSegmentationStep ) :
 
 		self.__DefaultToolButton.click()
 
-		# extra error checking, in case the user manages to click ReportROI button
 		super(ModelSegmentationStep, self).onExit(goingTo, transitionType) 

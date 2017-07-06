@@ -17,12 +17,6 @@ class ThresholdStep( ModelSegmentationStep ) :
 
 	def __init__( self, stepid ):
 
-		""" This method creates a drop-down menu that includes the whole step.
-			The description also acts as a tooltip for the button. There may be 
-			some way to override this. The initialize method is inherited
-			from ctk.
-		"""
-
 		self.initialize( stepid )
 		self.setName( '5. Threshold' )
 
@@ -47,7 +41,7 @@ class ThresholdStep( ModelSegmentationStep ) :
 
 		self.__layout = self.__parent.createUserInterface()
 
-		step_label = qt.QLabel( """Use the slider bar below to set an intensity threshold. Any pixels within your ROI and within the intensity threshold will be segmented.""")
+		step_label = qt.QLabel( """Use the slider bar below to set an intensity threshold. Any pixels within your ROI and within the intensity threshold will be selected.""")
 		step_label.setWordWrap(True)
 		self.__primaryGroupBox = qt.QGroupBox()
 		self.__primaryGroupBox.setTitle('Information')
@@ -132,16 +126,13 @@ class ThresholdStep( ModelSegmentationStep ) :
 
 		# self.InitVRDisplayNode()
 
-		# Not sure why this is here..
-		# self.__vrDisplayNode.VisibilityOn()
-
 		# Adds segementation label volume.
 		Helper.SetLabelVolume(self.__thresholdedLabelNode.GetID())
 
 		threshRange = [self.__threshRange.minimumValue, self.__threshRange.maximumValue]
 
 		# Segments the entire vtk model. I assume there's a more concise way
-		# to do it than thresholding over its entire intensity range...
+		# to do it than thresholding over its entire intensity range, so TODO
 		range0 = self.__threshRange.minimum
 		range1 = self.__threshRange.maximum
 		thresh = vtk.vtkImageThreshold()

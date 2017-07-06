@@ -15,12 +15,6 @@ class RegistrationStep( ModelSegmentationStep ) :
 	
 	def __init__( self, stepid ):
 
-		""" This method creates a drop-down menu that includes the whole step.
-		The description also acts as a tooltip for the button. There may be 
-		some way to override this. The initialize method is inherited
-		from ctk.
-		"""
-
 		self.initialize( stepid )
 		self.setName( '2. Registration' )
 
@@ -90,7 +84,7 @@ class RegistrationStep( ModelSegmentationStep ) :
 		self.__RegistrationRadio4.toolTip = """Computes a BSpline Registration on the pre-contrast image with respect to the post-contrast image. This method is slowest and may be necessary for only severly distorted images."""
 		RegistrationGroupBoxLayout.addRow(self.__RegistrationRadio4)
 
-		# Resampling Preference
+		# Output Volume Preference
 
 		OutputGroupBox = qt.QGroupBox()
 		OutputGroupBox.setTitle('Registration Output')
@@ -174,7 +168,7 @@ class RegistrationStep( ModelSegmentationStep ) :
 
 		super(ModelSegmentationStep, self).onExit(goingTo, transitionType) 
 
-	def onRegistrationRequest(self):
+	def onRegistrationRequest(self, wait_for_completion=False):
 
 		""" This method makes a call to a different slice module, BRAINSFIT. 
 			Note that this registration method computes a transform, which is 
@@ -186,17 +180,7 @@ class RegistrationStep( ModelSegmentationStep ) :
 		else:
 			pNode = self.parameterNode()
 
-			#TO-DO: Find appropriate vtk subclass for non-BSpline transforms.
-			
-			if self.__RegistrationRadio4.isChecked():
-				self.__BSplineTransform = slicer.vtkMRMLBSplineTransformNode()
-				slicer.mrmlScene.AddNode(self.__BSplineTransform)
-			else:
-				self.__LinearTransform = slicer.vtkMRMLLinearTransformNode()
-				slicer.mrmlScene.AddNode(self.__LinearTransform)
-
-			parameters = {}
-
+			# Registration Order Options
 			if self.__OrderRadio1.isChecked():
 				fixedVolumeID = pNode.GetParameter('originalFollowupVolumeID')
 				movingVolumeID = pNode.GetParameter('originalBaselineVolumeID')
@@ -207,11 +191,20 @@ class RegistrationStep( ModelSegmentationStep ) :
 			fixedVolume = Helper.getNodeByID(fixedVolumeID)
 			movingVolume = Helper.getNodeByID(movingVolumeID)
 
+			parameters = {}
 			parameters["fixedVolume"] = fixedVolume
 			parameters["movingVolume"] = movingVolume
 			parameters["interpolationMode"] = 'Linear'
 			parameters["initializeTransformMode"] = 'useMomentsAlign'
 			parameters["samplingPercentage"] = .02
+
+			# Registration Type Options
+			if self.__RegistrationRadio4.isChecked():
+				self.__BSplineTransform = slicer.vtkMRMLBSplineTransformNode()
+				slicer.mrmlScene.AddNode(self.__BSplineTransform)
+			else:
+				self.__LinearTransform = slicer.vtkMRMLLinearTransformNode()
+				slicer.mrmlScene.AddNode(self.__LinearTransform)
 
 			if self.__RegistrationRadio2.isChecked():
 				pNode.SetParameter('registrationTransformID', self.__LinearTransform.GetID())
@@ -220,9 +213,12 @@ class RegistrationStep( ModelSegmentationStep ) :
 				pNode.SetParameter('registrationTransformID', self.__LinearTransform.GetID())
 				parameters['transformType'] = 'Rigid,ScaleVersor3D,ScaleSkewVersor3D,Affine'
 			elif self.__RegistrationRadio4.isChecked():
+				self.__BSplineTransform = slicer.vtkMRMLBSplineTransformNode()
+				slicer.mrmlScene.AddNode(self.__BSplineTransform)
 				pNode.SetParameter('registrationTransformID', self.__BSplineTransform.GetID())
 				parameters['transformType'] = 'BSpline'
 
+			# Output options. TODO: Make this section a bit more logical.
 			if self.__OutputRadio2.isChecked():
 				parameters['outputVolume'] = movingVolume
 				pNode.SetParameter('registrationVolumeID', movingVolume.GetID())
@@ -244,10 +240,8 @@ class RegistrationStep( ModelSegmentationStep ) :
 					pNode.SetParameter('originalFollowupVolumeID', movingVolumeID)
 				parameters['outputVolume'] = registrationVolume
 
-			print parameters
-
 			self.__cliNode = None
-			self.__cliNode = slicer.cli.run(slicer.modules.brainsfit, self.__cliNode, parameters)
+			self.__cliNode = slicer.cli.run(slicer.modules.brainsfit, self.__cliNode, parameters, wait_for_completion=wait_for_completion)
 
 			# An event listener for the CLI. To-Do: Add a progress bar.
 			self.__cliObserverTag = self.__cliNode.AddObserver('ModifiedEvent', self.processRegistrationCompletion)

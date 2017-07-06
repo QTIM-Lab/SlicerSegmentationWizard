@@ -24,7 +24,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 		"""
 
 		self.initialize( stepid )
-		self.setName( '3. Normalization and Subtraction' )
+		self.setName( '3. Subtraction' )
 
 		self.__status = 'uncalled'
 		self.__parent = super( NormalizeSubtractStep, self )
@@ -37,7 +37,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 
 		self.__layout = self.__parent.createUserInterface()
 
-		step_label = qt.QLabel( """You may normalize intensities between your two images. This may help when setting an intensity threshold""")
+		step_label = qt.QLabel( """Normalize intensities between your two images before subtracting them.""")
 		step_label.setWordWrap(True)
 		self.__primaryGroupBox = qt.QGroupBox()
 		self.__primaryGroupBox.setTitle('Information')
@@ -67,7 +67,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 		self.__OutputRadio2.toolTip = "Original volumes will be overwritten at the end of this step."
 		NormGroupBoxLayout.addRow(self.__OutputRadio2)
 
-		# Which image is normalized to which may matter in the future. For now, I'm not sure if you one can use the Gaussian scale in two directions.
+		# Normalization Order Options
 		OrderGroupBox = qt.QGroupBox()
 		OrderGroupBox.setTitle('Normalization Order')
 		self.__layout.addRow(OrderGroupBox)
@@ -83,7 +83,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 		self.__OrderRadio2.toolTip = "Your post-contrast image will be normalized."
 		OrderGroupBoxLayout.addRow(self.__OrderRadio2)
 
-		# Subtraction methods - more straightforward, probably only one.
+		# Subtraction methods. Likely only one method, in practice.
 		SubtractGroupBox = qt.QGroupBox()
 		SubtractGroupBox.setTitle('Calculate Subtraction Map')
 		self.__layout.addRow(SubtractGroupBox)
@@ -189,12 +189,10 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 		CommonMax = maxArray.index(max(maxArray))
 		LowerMaxImage = imageArray[CommonMax]
 
-		# Image scalar multiplication is perfored to normalize the two images.
+		# Image scalar multiplication is performed to normalize the two images.
 		# New volumes are created. With the present mode of normalization, one
 		# of the created volumes will be identical.
 
-		# This method of naming normalized volumes is pretty bad, and should
-		# probably be fixed during project week.
 		for i in [0,1]:
 			vtkScaleArray[i].SetInputData(imageArray[i])
 			vtkScaleArray[i].SetOutputScalarTypeToInt()
@@ -221,7 +219,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 
 		self.__normalizationButton.setText('Normalization complete!')
 
-	def onSubtractionRequest(self):
+	def onSubtractionRequest(self, wait_for_completion=False):
 
 		""" This method subtracts two images pixel-for-pixel using Slicer's 
 			subtractscalarvolumes module. It apparently can deal with differently
@@ -260,7 +258,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 		parameters['order'] = '1'
 
 		self.__cliNode = None
-		self.__cliNode = slicer.cli.run(slicer.modules.subtractscalarvolumes, self.__cliNode, parameters)
+		self.__cliNode = slicer.cli.run(slicer.modules.subtractscalarvolumes, self.__cliNode, parameters, wait_for_completion=wait_for_completion)
 
 		# An event listener for the CLI. To-Do: Add a progress bar.
 		self.__cliObserverTag = self.__cliNode.AddObserver('ModifiedEvent', self.processSubtractionCompletion)

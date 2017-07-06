@@ -157,6 +157,7 @@ class ModelSegmentationWidget(ScriptedLoadableModuleWidget):
     def enter(self):
         """ A quick check to see if the file was loaded. Can be seen in the Python Interactor.
         """
+
         # import ModelSegmentation
         # print "Model Segmentation Module Correctly Entered"
 
@@ -221,144 +222,144 @@ class ModelSegmentationTest(ScriptedLoadableModuleTest):
 
     try:
 
-delayDisplay("Loading sample data")
+        delayDisplay("Loading sample data")
 
-import SampleData
-sampleDataLogic = SampleData.SampleDataLogic()
-head = sampleDataLogic.downloadMRHead()
-braintumor1 = sampleDataLogic.downloadMRBrainTumor1()
-braintumor2 = sampleDataLogic.downloadMRBrainTumor2()
+        import SampleData
+        sampleDataLogic = SampleData.SampleDataLogic()
+        head = sampleDataLogic.downloadMRHead()
+        braintumor1 = sampleDataLogic.downloadMRBrainTumor1()
+        braintumor2 = sampleDataLogic.downloadMRBrainTumor2()
 
-delayDisplay("Donwnloading sample model")
+        delayDisplay("Donwnloading sample model")
 
-# import urllib
-# downloads = (
-#     ('http://slicer.kitware.com/midas3/download?items=8986', 'TestModel.vtk', slicer.util.loadScene),
-#     )
-# for url,name,loader in downloads:
-#   filePath = os.path.join(slicer.app.temporaryPath, name)
-#   if not os.path.exists(filePath) or os.stat(filePath).st_size == 0:
-#     print('Requesting download %s from %s...\n' % (name, url))
-#     urllib.urlretrieve(url, filePath)
-#   if loader:
-#     print('Loading %s...\n' % (name,))
-#     loader(filePath)
-# test_model = slicer.util.getNode('TestModel')
+        import urllib
+        downloads = (
+            ('https://github.com/QTIM-Lab/3D_Model_Segmentation/blob/master/ModelSegmentation/Testing/Data/Test_Model.vtk?raw=true', 'TestModel.vtk', slicer.util.loadScene),
+            )
+        for url,name,loader in downloads:
+          filePath = os.path.join(slicer.app.temporaryPath, name)
+          if not os.path.exists(filePath) or os.stat(filePath).st_size == 0:
+            print('Requesting download %s from %s...\n' % (name, url))
+            urllib.urlretrieve(url, filePath)
+          if loader:
+            print('Loading %s...\n' % (name,))
+            loader(filePath)
+        test_model = slicer.util.getNode('TestModel')
 
-delayDisplay("Getting scene variables")
+        delayDisplay("Getting scene variables")
 
-mainWindow = slicer.util.mainWindow()
-layoutManager = slicer.app.layoutManager()
-threeDView = layoutManager.threeDWidget(0).threeDView()
-redWidget = layoutManager.sliceWidget('Red')
-redController = redWidget.sliceController()
-viewNode = threeDView.mrmlViewNode()
-cameras = slicer.util.getNodes('vtkMRMLCameraNode*')
+        mainWindow = slicer.util.mainWindow()
+        layoutManager = slicer.app.layoutManager()
+        threeDView = layoutManager.threeDWidget(0).threeDView()
+        redWidget = layoutManager.sliceWidget('Red')
+        redController = redWidget.sliceController()
+        viewNode = threeDView.mrmlViewNode()
+        cameras = slicer.util.getNodes('vtkMRMLCameraNode*')
 
-mainWindow.moduleSelector().selectModule('ModelSegmentation')
-modelsegmentation_module = slicer.modules.modelsegmentation.widgetRepresentation().self()
+        mainWindow.moduleSelector().selectModule('ModelSegmentation')
+        modelsegmentation_module = slicer.modules.modelsegmentation.widgetRepresentation().self()
 
-delayDisplay('Select Volumes')
-baselineNode = braintumor1
-followupNode = braintumor2
-modelsegmentation_module.Step1._VolumeSelectStep__enableSubtractionMapping.setChecked(True)
-modelsegmentation_module.Step1._VolumeSelectStep__baselineVolumeSelector.setCurrentNode(baselineNode)
-modelsegmentation_module.Step1._VolumeSelectStep__followupVolumeSelector.setCurrentNode(followupNode)
+        delayDisplay('Select Volumes')
+        baselineNode = braintumor1
+        followupNode = braintumor2
+        modelsegmentation_module.Step1._VolumeSelectStep__enableSubtractionMapping.setChecked(True)
+        modelsegmentation_module.Step1._VolumeSelectStep__baselineVolumeSelector.setCurrentNode(baselineNode)
+        modelsegmentation_module.Step1._VolumeSelectStep__followupVolumeSelector.setCurrentNode(followupNode)
 
-delayDisplay('Go Forward')
-modelsegmentation_module.workflow.goForward()
+        delayDisplay('Go Forward')
+        modelsegmentation_module.workflow.goForward()
 
-delayDisplay('Register Images')
-modelsegmentation_module.Step2.onRegistrationRequest()
+        delayDisplay('Register Images')
+        modelsegmentation_module.Step2.onRegistrationRequest(wait_for_completion=True)
 
-delayDisplay('Go Forward', 60000)
-modelsegmentation_module.workflow.goForward()
+        delayDisplay('Go Forward')
+        modelsegmentation_module.workflow.goForward()
 
-delayDisplay('Normalize Images')
-modelsegmentation_module.Step3.onGaussianNormalizationRequest()
+        delayDisplay('Normalize Images')
+        modelsegmentation_module.Step3.onGaussianNormalizationRequest()
 
-delayDisplay('Subtract Images')
-modelsegmentation_module.Step3.onSubtractionRequest()
+        delayDisplay('Subtract Images')
+        modelsegmentation_module.Step3.onSubtractionRequest(wait_for_completion=True)
 
-delayDisplay('Go Forward', 60000)
-modelsegmentation_module.workflow.goForward()
+        delayDisplay('Go Forward')
+        modelsegmentation_module.workflow.goForward()
 
-delayDisplay('Load model')
-modelsegmentation_module.Step4._ROIStep__clippingModelSelector.setCurrentNode(test_model)
+        delayDisplay('Load model')
+        modelsegmentation_module.Step4._ROIStep__clippingModelSelector.setCurrentNode(test_model)
 
-delayDisplay('Go Forward')
-modelsegmentation_module.workflow.goForward()
+        delayDisplay('Go Forward')
+        modelsegmentation_module.workflow.goForward()
 
+        delayDisplay('Set Thresholds')
         modelsegmentation_module.Step5._ThresholdStep__threshRange.minimumValue = 50
         modelsegmentation_module.Step5._ThresholdStep__threshRange.maximumValue = 150
 
+        delayDisplay('Go Forward')
         modelsegmentation_module.workflow.goForward()
 
+        delayDisplay('Restart Module')
         modelsegmentation_module.Step6.Restart()
 
-while modelsegmentation_module.Step2._RegistrationStep__status != "Completed":
-    pass
+        # delayDisplay('Inspect - zoom')
+        # self.clickAndDrag(redWidget,button='Right')
 
-        delayDisplay('Inspect - zoom')
-        self.clickAndDrag(redWidget,button='Right')
+        # delayDisplay('Inspect - pan')
+        # self.clickAndDrag(redWidget,button='Middle')
 
-        delayDisplay('Inspect - pan')
-        self.clickAndDrag(redWidget,button='Middle')
+        # delayDisplay('Inspect - scroll')
+        # for offset in xrange(-20,20,2):
+        # redController.setSliceOffsetValue(offset)
 
-        delayDisplay('Inspect - scroll')
-        for offset in xrange(-20,20,2):
-        redController.setSliceOffsetValue(offset)
+        # delayDisplay('Set ROI')
+        # roi = changeTracker.defineROIStep._ChangeTrackerDefineROIStep__roi
+        # roi.SetXYZ(-2.81037, 28.7629, 28.4536)
+        # roi.SetRadiusXYZ(22.6467, 22.6804, 22.9897)
 
-        delayDisplay('Set ROI')
-        roi = changeTracker.defineROIStep._ChangeTrackerDefineROIStep__roi
-        roi.SetXYZ(-2.81037, 28.7629, 28.4536)
-        roi.SetRadiusXYZ(22.6467, 22.6804, 22.9897)
+        # delayDisplay('Go Forward')
+        # changeTracker.workflow.goForward()
 
-        delayDisplay('Go Forward')
-        changeTracker.workflow.goForward()
+        # delayDisplay('Set Threshold')
+        # changeTracker.segmentROIStep._ChangeTrackerSegmentROIStep__threshRange.minimumValue = 142
 
-        delayDisplay('Set Threshold')
-        changeTracker.segmentROIStep._ChangeTrackerSegmentROIStep__threshRange.minimumValue = 142
+        # delayDisplay('Go Forward')
+        # changeTracker.workflow.goForward()
 
-        delayDisplay('Go Forward')
-        changeTracker.workflow.goForward()
+        # delayDisplay('Pick Metric')
+        # checkList = changeTracker.analyzeROIStep._ChangeTrackerAnalyzeROIStep__metricCheckboxList
+        # index = checkList.values().index('IntensityDifferenceMetric')
+        # checkList.keys()[index].checked = True
 
-        delayDisplay('Pick Metric')
-        checkList = changeTracker.analyzeROIStep._ChangeTrackerAnalyzeROIStep__metricCheckboxList
-        index = checkList.values().index('IntensityDifferenceMetric')
-        checkList.keys()[index].checked = True
+        # delayDisplay('Go Forward')
+        # changeTracker.workflow.goForward()
 
-        delayDisplay('Go Forward')
-        changeTracker.workflow.goForward()
-
-        delayDisplay('Look!')
-        redWidget.sliceController().setSliceVisible(True);
+        # delayDisplay('Look!')
+        # redWidget.sliceController().setSliceVisible(True);
 
 
-        delayDisplay('Crosshairs')
-        compareWidget = layoutManager.sliceWidget('Compare1')
-        style = compareWidget.interactorStyle()
-        interator = style.GetInteractor()
-        for step in xrange(100):
-        interator.SetEventPosition(10,step)
-        style.OnMouseMove()
+        # delayDisplay('Crosshairs')
+        # compareWidget = layoutManager.sliceWidget('Compare1')
+        # style = compareWidget.interactorStyle()
+        # interator = style.GetInteractor()
+        # for step in xrange(100):
+        # interator.SetEventPosition(10,step)
+        # style.OnMouseMove()
 
-        delayDisplay('Zoom')
-        self.clickAndDrag(compareWidget,button='Right')
+        # delayDisplay('Zoom')
+        # self.clickAndDrag(compareWidget,button='Right')
 
-        delayDisplay('Pan')
-        self.clickAndDrag(compareWidget,button='Middle')
+        # delayDisplay('Pan')
+        # self.clickAndDrag(compareWidget,button='Middle')
 
-        delayDisplay('Inspect - scroll')
-        compareController = redWidget.sliceController()
-        for offset in xrange(10,30,2):
-        compareController.setSliceOffsetValue(offset)
+        # delayDisplay('Inspect - scroll')
+        # compareController = redWidget.sliceController()
+        # for offset in xrange(10,30,2):
+        # compareController.setSliceOffsetValue(offset)
 
-        delayDisplay('Close Scene')
-        slicer.mrmlScene.Clear(0)
+        # delayDisplay('Close Scene')
+        # slicer.mrmlScene.Clear(0)
 
-        delayDisplay('Test passed!')
-        except Exception, e:
+        # delayDisplay('Test passed!')
+    except Exception, e:
         import traceback
         traceback.print_exc()
         delayDisplay('Test caused exception!\n' + str(e))

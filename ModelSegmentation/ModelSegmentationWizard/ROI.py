@@ -39,14 +39,9 @@ class ROIStep( ModelSegmentationStep ) :
 		"""
 
 		self.initialize( stepid )
-		self.setName( '4. Define Region(s) of Interest' )
+		self.setName( '4. Define Region of Interest' )
+
 		self.__logic = VolumeClipWithModelLogic()
-
-		# Does declaring this one achieve anything? It doesn't happen in other steps.
-		# It may even hurt things..
-		self.__parameterNode = None
-
-		self.__parameterNodeObserver = None
 
 		self.__clippingModelNode = None
 		self.__clippingMarkupNode = None
@@ -62,24 +57,11 @@ class ROIStep( ModelSegmentationStep ) :
 		self.__vrDisplayNodeID = ''
 		self.__vrOpacityMap = None
 		self.__threshRange = [ -1, -1 ]
-
-		# These don't seem necessary; investigate.
-		self.__roiTransformNode = None
-		self.__baselineVolume = None
 		self.__fillValue = 0
-
-		# TODO: Remove portions about Cubic ROIs. This will not be in final program.
-		self.__roi = None
-		self.__roiObserverTag = None
-		self.__CubicROI = False
-		self.__ConvexROI = True
 
 		self.__parent = super( ROIStep, self )
 
 	def createUserInterface( self ):
-
-		""" This UI currently is not easy to use.
-		"""
 
 		# Intialize Volume Rendering...
 		# Why here, if not init?
@@ -87,7 +69,7 @@ class ROIStep( ModelSegmentationStep ) :
 
 		self.__layout = self.__parent.createUserInterface()
 
-		step_label = qt.QLabel( """Create either a 3D volumetric ROI around the area you wish to threshold. Only voxels inside these ROIs will be thresholded in the next step. Click to add points to the volumetric ROI, or click and drag existing points to move them. A curved ROI will be filled in around these points. Similarly, click and drag the points on the box ROI to change its location and size.""")
+		step_label = qt.QLabel( """Create either a 3D model-based ROI around the area you wish to threshold. Only voxels inside these ROIs will be thresholded in the next step. Click to add points to the model-based ROI, or click and drag existing points to move them. A curved ROI will be filled in around these points. Similarly, click and drag the points on the box ROI to change its location and size.""")
 		step_label.setWordWrap(True)
 		self.__primaryGroupBox = qt.QGroupBox()
 		self.__primaryGroupBox.setTitle('Information')
@@ -95,23 +77,23 @@ class ROIStep( ModelSegmentationStep ) :
 		self.__primaryGroupBoxLayout.addRow(step_label)
 		self.__layout.addRow(self.__primaryGroupBox)
 
-		# Toolbar with model buttons.
-		self.__roiToolbarGroupBox = qt.QGroupBox()
-		self.__roiToolbarGroupBox.setTitle('ROI Toolbar')
-		self.__roiToolbarGroupBoxLayout = qt.QFormLayout(self.__roiToolbarGroupBox)
-
+		# Markup button.
 		self.__markupButton = qt.QToolButton()
 		self.__markupButton.icon = qt.QIcon(os.path.join(os.path.dirname(__file__), 'MarkupsMouseModePlace.png'))
 		self.__markupButton.setCheckable(1)
 		self.__markupButton.connect('clicked()', self.onMarkupClicked)
-		self.__roiToolbarGroupBoxLayout.addRow('Model Marker Placement Tool', self.__markupButton)
 
+		# Toolbar with markup button.
+		self.__roiToolbarGroupBox = qt.QGroupBox()
+		self.__roiToolbarGroupBox.setTitle('ROI Toolbar')
+		self.__roiToolbarGroupBoxLayout = qt.QFormLayout(self.__roiToolbarGroupBox)
+		self.__roiToolbarGroupBoxLayout.addRow('Model Marker Placement Tool', self.__markupButton)
 		self.__layout.addRow(self.__roiToolbarGroupBox)
 
 		# I'm referring to the Delaunay Triangulation as a "Convex ROI"
 		# I don't think this is very clear; a better title would be good.
 		self.__convexGroupBox = qt.QGroupBox()
-		self.__convexGroupBox.setTitle('Volumetric ROI')
+		self.__convexGroupBox.setTitle('Model-Based ROI')
 		self.__convexGroupBoxLayout = qt.QFormLayout(self.__convexGroupBox)
 
 		""" There is an interesting entanglement between markups and models
@@ -140,7 +122,6 @@ class ROIStep( ModelSegmentationStep ) :
 
 		# Below is a markups box that I would rather not have, because
 		# it is confusing when matched with Models.
-
 		# self.__clippingMarkupSelector = slicer.qMRMLNodeComboBox()
 		# self.__clippingMarkupSelector.nodeTypes = (("vtkMRMLMarkupsFiducialNode"), "")
 		# self.__clippingMarkupSelector.addEnabled = True
@@ -153,63 +134,11 @@ class ROIStep( ModelSegmentationStep ) :
 		# self.__clippingMarkupSelector.setToolTip("Use markup points to determine a convex ROI.")
 		# ModelFormLayout.addRow("Convex ROI Markups: ", self.__clippingMarkupSelector)
 
-		""" Below is a gameplan for making loading previous models
-			more obvious. Most Slice users understand loading nifti
-			files or DICOMsegs, even if they don't understand vtk
-			models. Converting labelmaps to models may be the way to
-			go. Better yet, integrating with the Segmentations module,
-			if users can easily understand that.
-		"""
-
-		# self.__addConvexGroupBox = qt.QGroupBox()
-		# self.__addConvexGroupBox.setTitle('Add Labelmap as Convex ROI')
-		# self.__addConvexGroupBoxLayout = qt.QFormLayout(self.__addConvexGroupBox)
-
-		# self.__convexLabelMapSelector = slicer.qMRMLNodeComboBox()
-		# self.__convexLabelMapSelector.nodeTypes = (("vtkMRMLLabelMapVolumeNode"), "")
-		# self.__convexLabelMapSelector.addEnabled = True
-		# self.__convexLabelMapSelector.removeEnabled = False
-		# self.__convexLabelMapSelector.noneEnabled = True
-		# self.__convexLabelMapSelector.showHidden = False
-		# self.__convexLabelMapSelector.renameEnabled = True
-		# self.__convexLabelMapSelector.selectNodeUponCreation = True
-		# self.__convexLabelMapSelector.showChildNodeTypes = False
-		# self.__convexLabelMapSelector.setMRMLScene(slicer.mrmlScene)
-		# self.__convexLabelMapSelector.setToolTip("Choose a labelmap to turn into a convex ROI.")
-		# self.__addConvexGroupBoxLayout.addRow("Labelmap: ", self.__convexLabelMapSelector)
-
-		# self.__addConvexButton = qt.QPushButton('Add Labelmap')
-		# self.__addConvexGroupBoxLayout.addRow(self.__addConvexButton)
-		# self.__addConvexGroupBox.setEnabled(0)
-
-		# self.__layout.addRow(self.__addConvexGroupBox)
-
-		""" How to describe the 3D Visualization threshold? I don't think
-			most people will know what it means. It controls how transparent
-			different intensities are in the visualization - it's bit hard
-			to get an intuitive handle on it.
-		"""
-
-		self.__threshRange = slicer.qMRMLRangeWidget()
-		self.__threshRange.decimals = 0
-		self.__threshRange.singleStep = 1
-		self.__threshRange.connect('valuesChanged(double,double)', self.onThresholdChanged)
-		qt.QTimer.singleShot(0, self.killButton)
-
-		# ThreshGroupBox = qt.QGroupBox()
-		# ThreshGroupBox.setTitle('3D Visualization Intensity Threshold')
-		# ThreshGroupBoxLayout = qt.QFormLayout(ThreshGroupBox)
-		# ThreshGroupBoxLayout.addRow(self.__threshRange)
-		# self.__layout.addRow(ThreshGroupBox)
-
 		# In case we wanted to set specific parameters for Volume Clip...
-
 		# self.valueEditWidgets = {"ClipOutsideSurface": True, "FillValue": 0}
 		# # self.nodeSelectorWidgets = {"InputVolume": self.inputVolumeSelector, "ClippingModel": self.clippingModelSelector, "ClippingMarkup": self.clippingMarkupSelector, "OutputVolume": self.outputVolumeSelector}
 
 		qt.QTimer.singleShot(0, self.killButton)
-
-		# Likely more functions will need to be connected here.
 
 		self.__clippingModelSelector.connect("currentNodeChanged(vtkMRMLNode*)", self.onClippingModelSelect)
 
@@ -220,6 +149,7 @@ class ROIStep( ModelSegmentationStep ) :
 			self.__persistentButton.trigger()
 		if self.__clippingModelSelector.currentNode() == None or self.__clippingModelSelector.currentNode() == '':
 			self.__clippingModelSelector.addNode()
+			self.onClippingModelSelect(self.__clippingModelSelector.currentNode())
 
 	def onClippingModelSelect(self, node):
 
@@ -233,6 +163,8 @@ class ROIStep( ModelSegmentationStep ) :
 			
 			self.__clippingModelNode = node
 			self.setAndObserveClippingMarkupNode(Helper.getNodeByID(self.__markupList[self.__modelList.index(node.GetID())][1]))
+			print Helper.getNodeByID(self.__markupList[self.__modelList.index(node.GetID())][1])
+			print node.GetID()
 
 	def setAndObserveClippingMarkupNode(self, clippingMarkupNode):
 
@@ -257,6 +189,7 @@ class ROIStep( ModelSegmentationStep ) :
 
 		if not self.__clippingMarkupNode or not self.__clippingModelSelector.currentNode():
 			return
+		print self.__clippingMarkupNode
 		self.__logic.updateModelFromMarkup(self.__clippingMarkupNode, self.__clippingModelSelector.currentNode())
 
 	def onThresholdChanged(self): 
@@ -304,20 +237,12 @@ class ROIStep( ModelSegmentationStep ) :
 
 		self.updateWidgetFromParameters(pNode)
 
-		# I believe this changes the layout to four-up; will check.
-		lm = slicer.app.layoutManager()
-		lm.setLayout(3)
-		pNode = self.parameterNode()
 		Helper.SetLabelVolume(None)
 
 		if self.__markupList != None and self.__markupList != '':
 			for ROI in self.__markupList:
 				Helper.getNodeByID(ROI[1]).GetDisplayNode().VisibilityOn()
 				self.setAndObserveClippingMarkupNode(Helper.getNodeByID(ROI[1]))
-
-		# Unsure about this step... might be a hold-over.
-		if self.__roi != None:
-			self.__roi.SetDisplayVisibility(1)
 
 		pNode.SetParameter('currentStep', self.stepid)
 		
@@ -354,6 +279,8 @@ class ROIStep( ModelSegmentationStep ) :
 
 		"""	This method calls a series of steps necessary to initailizing a volume 
 			rendering node with an ROI.
+
+			TODO: Understand and standardize this function.
 		"""
 		if self.__vrDisplayNode == None or self.__vrDisplayNode == '':
 			pNode = self.parameterNode()

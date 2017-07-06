@@ -15,12 +15,12 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 
 	def __init__( self, stepid ):
 
-		# Method inherited from ctk.
+		# initialize inherited from ctk.
 		self.initialize( stepid )
 
 	def setParameterNode(self, parameterNode):
 
-		# Keeps track of MRML objects, other variables in the scene.
+		# A parameter node keeps track of MRML objects and other variables in between steps.
 		self.__parameterNode = parameterNode
 
 	def parameterNode(self):
@@ -29,7 +29,7 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 
 	def createUserInterface( self ):
 
-  		# Create basic layout for a step.
+  		# Creates a basic layout for each step.
 		self.__layout = qt.QFormLayout( self )
 		self.__layout.setVerticalSpacing( 5 )
 
@@ -53,7 +53,6 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 
 	def onExit( self, goingTo, transitionType ):
 
-		# Keeps track of parameters and steps for testing purposes.
 		print self.__parameterNode
 		goingToId = "None"
 		if goingTo: 
