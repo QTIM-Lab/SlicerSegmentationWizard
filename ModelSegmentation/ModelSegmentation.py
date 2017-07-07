@@ -162,7 +162,7 @@ class ModelSegmentationWidget(ScriptedLoadableModuleWidget):
         # print "Model Segmentation Module Correctly Entered"
 
         test = ModelSegmentationTest()
-        test.runTest():
+        test.runTest()
 
 def delayDisplay(message,msec=5000):
     """This utility method displays a small dialog and waits.
