@@ -79,38 +79,43 @@ class ReviewStep( ModelSegmentationStep ) :
 
 		self.__RemoveRegisteredImage = qt.QCheckBox()
 		self.__RemoveRegisteredImage.checked = True
-		self.__RemoveRegisteredImage.setToolTip("Delete new images resulting from registration.")
+		self.__RemoveRegisteredImage.setToolTip("Delete your registered images.")
 		RestartGroupBoxLayout.addRow("Delete Registered images: ", self.__RemoveRegisteredImage)  
 
 		self.__RemoveNormalizedImages = qt.QCheckBox()
 		self.__RemoveNormalizedImages.checked = True
-		self.__RemoveNormalizedImages.setToolTip("Delete images produced via normalization.")
+		self.__RemoveNormalizedImages.setToolTip("Delete your normalized images.")
 		RestartGroupBoxLayout.addRow("Delete Normalized images: ", self.__RemoveNormalizedImages)   
 
 		self.__RemoveSubtractionMap = qt.QCheckBox()
 		self.__RemoveSubtractionMap.checked = True
-		self.__RemoveSubtractionMap.setToolTip("Delete the full version of your subtraction map.")
+		self.__RemoveSubtractionMap.setToolTip("Delete your subtraction map.")
 		RestartGroupBoxLayout.addRow("Delete Subtraction map: ", self.__RemoveSubtractionMap)    
 
 		self.__RemoveCroppedMap = qt.QCheckBox()
 		self.__RemoveCroppedMap.checked = True
-		self.__RemoveCroppedMap.setToolTip("Delete the cropped version of your segmented volume.")
-		RestartGroupBoxLayout.addRow("Delete Cropped volume: ", self.__RemoveCroppedMap)     
+		self.__RemoveCroppedMap.setToolTip("Delete the cropped version of your input volume.")
+		RestartGroupBoxLayout.addRow("Delete Cropped Volume: ", self.__RemoveCroppedMap)     
 
 		self.__RemoveROI = qt.QCheckBox()
 		self.__RemoveROI.checked = False
-		self.__RemoveROI.setToolTip("Delete the ROI resulting from thresholding your original ROI.")
+		self.__RemoveROI.setToolTip("Delete the ROI you made with your markup points.")
 		RestartGroupBoxLayout.addRow("Delete Full ROI: ", self.__RemoveROI)    
 
-		self.__RemoveROIModel = qt.QCheckBox()
-		self.__RemoveROIModel.checked = False
-		self.__RemoveROIModel.setToolTip("Delete the ROI resulting from thresholding your original ROI.")
-		RestartGroupBoxLayout.addRow("Delete Thresholded ROI: ", self.__RemoveROIModel) 
+		self.__RemoveThresholdedROI = qt.QCheckBox()
+		self.__RemoveThresholdedROI.checked = False
+		self.__RemoveThresholdedROI.setToolTip("Delete the intensity-thresholded version of your ROI.")
+		RestartGroupBoxLayout.addRow("Delete Thresholded ROI: ", self.__RemoveThresholdedROI) 
 
 		self.__RemoveMarkups = qt.QCheckBox()
 		self.__RemoveMarkups.checked = True
-		self.__RemoveMarkups.setToolTip("Delete the markup points you used to make your ROI.")
-		RestartGroupBoxLayout.addRow("Delete Markup Model: ", self.__RemoveMarkups) 
+		self.__RemoveMarkups.setToolTip("Delete the markup points you used to create your 3D ROI.")
+		RestartGroupBoxLayout.addRow("Delete Markup Points: ", self.__RemoveMarkups) 
+
+		self.__RemoveModels = qt.QCheckBox()
+		self.__RemoveModels.checked = True
+		self.__RemoveModels.setToolTip("Delete the 3D model you created from your markup points.")
+		RestartGroupBoxLayout.addRow("Delete 3D Model: ", self.__RemoveModels) 
 
 		self.__RestartButton.connect('clicked()', self.Restart)
 		self.__RestartActivated = True
@@ -141,7 +146,6 @@ class ReviewStep( ModelSegmentationStep ) :
 		self.__DefaultToolButton.click()
 
 		pNode = self.parameterNode()
-		print pNode
 
 		slicer.mrmlScene.RemoveNode(Helper.getNodeByID(pNode.GetParameter('clippingModelNodeID')))
 		slicer.mrmlScene.RemoveNode(Helper.getNodeByID(pNode.GetParameter('clippingMarkupNodeID')))
@@ -164,12 +168,14 @@ class ReviewStep( ModelSegmentationStep ) :
 		if self.__RemoveROI.checked:
 			slicer.mrmlScene.RemoveNode(Helper.getNodeByID(pNode.GetParameter('nonThresholdedLabelID')))
 
-		if self.__RemoveROIModel.checked:
+		if self.__RemoveThresholdedROI.checked:
 			slicer.mrmlScene.RemoveNode(Helper.getNodeByID(pNode.GetParameter('thresholdedLabelID')))
 
 		if self.__RemoveMarkups.checked:
-			slicer.mrmlScene.RemoveNode(Helper.getNodeByID(pNode.GetParameter('clippingModelNodeID')))
 			slicer.mrmlScene.RemoveNode(Helper.getNodeByID(pNode.GetParameter('clippingMarkupNodeID')))		
+
+		if self.__RemoveModels.checked:
+			slicer.mrmlScene.RemoveNode(Helper.getNodeByID(pNode.GetParameter('clippingModelNodeID')))
 
 		pNode.SetParameter('baselineVolumeID', '')	
 		pNode.SetParameter('followupVolumeID', '')
@@ -185,6 +191,7 @@ class ReviewStep( ModelSegmentationStep ) :
 		pNode.SetParameter('clippingMarkupNodeID', '')
 		pNode.SetParameter('clippingModelNodeID', '')
 		pNode.SetParameter('outputList', '')	
+		pNode.SetParameter('markupList', '')	
 		pNode.SetParameter('modelList', '')	
 
 		pNode.SetParameter('thresholdedLabelID', '')
@@ -241,8 +248,6 @@ class ReviewStep( ModelSegmentationStep ) :
 			bl[0].hide()
 		if len(ex):
 			ex[0].hide()
-		else:
-			print 'fail'
 
 		self.__editLabelMapsFrame = slicer.util.findChildren('','EditLabelMapsFrame')[0]
 		self.__toolsColor = EditorLib.EditColor(self.__editLabelMapsFrame)

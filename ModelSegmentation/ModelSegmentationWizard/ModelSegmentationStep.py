@@ -41,13 +41,13 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 			Trigger upon clicking Next and Previous buttons.
 		"""
 
-		print self.parameterNode()
+		# print self.parameterNode()
 
 		comingFromId = "None"
 		if comingFrom: 
 			comingFromId = comingFrom.id()
 
-		print "-> onEntry - current [%s] - comingFrom [%s]" % ( self.id(), comingFromId )
+		# print "-> onEntry - current [%s] - comingFrom [%s]" % ( self.id(), comingFromId )
 
 		super( ModelSegmentationStep, self ).onEntry( comingFrom, transitionType )
 
@@ -57,7 +57,7 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 		goingToId = "None"
 		if goingTo: 
 			goingToId = goingTo.id()
-		print "-> onExit - current [%s] - goingTo [%s]" % ( self.id(), goingToId )
+		# print "-> onExit - current [%s] - goingTo [%s]" % ( self.id(), goingToId )
 
 		super( ModelSegmentationStep, self ).onExit( goingTo, transitionType )
 
@@ -68,7 +68,7 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 		"""
 		
 		return
-		print "-> validate %s" % self.id()
+		# print "-> validate %s" % self.id()
 
 	def validationSucceeded( self, desiredBranchId ):
 
