@@ -150,7 +150,11 @@ class ROIStep( ModelSegmentationStep ) :
 
         selectionNode.SetReferenceActivePlaceNodeClassName("vtkMRMLMarkupsFiducialNode")
         interactionNode = applicationLogic.GetInteractionNode()
-        interactionNode.SwitchToPersistentPlaceMode()
+
+        if self.__markupButton.checked:
+            interactionNode.SwitchToPersistentPlaceMode()
+        else:
+            interactionNode.SwitchToViewTransformMode()
 
         if self.__clippingMarkupSelector.currentNode() == None or self.__clippingMarkupSelector.currentNode() == '':
             self.__clippingMarkupSelector.addNode()

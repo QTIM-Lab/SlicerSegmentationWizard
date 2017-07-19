@@ -165,23 +165,6 @@ class ModelSegmentationWidget():
         # test = ModelSegmentationTest()
         # test.runTest()
 
-# def delayDisplay(message,msec=5000):
-#     """This utility method displays a small dialog and waits.
-#     This does two things: 1) it lets the event loop catch up
-#     to the state of the test so that rendering and widget updates
-#     have all taken place before the test continues and 2) it
-#     shows the user/developer/tester the state of the test
-#     so that we'll know when it breaks.
-#     """
-#     print(message)
-#     info = qt.QDialog()
-#     infoLayout = qt.QVBoxLayout()
-#     info.setLayout(infoLayout)
-#     label = qt.QLabel(message,info)
-#     infoLayout.addWidget(label)
-#     qt.QTimer.singleShot(msec, info.close)
-#     info.exec_()
-
 class ModelSegmentationTest():
 
   def delayDisplay(self,message,msec=1000):
