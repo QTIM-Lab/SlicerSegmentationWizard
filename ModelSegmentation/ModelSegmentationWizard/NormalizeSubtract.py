@@ -46,6 +46,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 		self.__layout.addRow(self.__primaryGroupBox)
 
 		# Normalization methods - there aren't many now, but there may be in the future.
+
 		NormGroupBox = qt.QGroupBox()
 		NormGroupBox.setTitle('Normalization Methods')
 		self.__layout.addRow(NormGroupBox)
@@ -58,6 +59,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 		self.__normalizationButton.setEnabled(1)
 
 		# Create new volumes options.
+
 		self.__OutputRadio1 = qt.QRadioButton("Create new volumes.")
 		self.__OutputRadio1.toolTip = "New volumes will be created with the naming convention \"[vol]_normalized\"."
 		NormGroupBoxLayout.addRow(self.__OutputRadio1)
@@ -67,7 +69,8 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 		self.__OutputRadio2.toolTip = "Original volumes will be overwritten at the end of this step."
 		NormGroupBoxLayout.addRow(self.__OutputRadio2)
 
-		# Normalization Order Options
+		# Normalization order options. May not be relevant in every case.
+
 		OrderGroupBox = qt.QGroupBox()
 		OrderGroupBox.setTitle('Normalization Order')
 		self.__layout.addRow(OrderGroupBox)
@@ -84,6 +87,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 		OrderGroupBoxLayout.addRow(self.__OrderRadio2)
 
 		# Subtraction methods. Likely only one method, in practice.
+
 		SubtractGroupBox = qt.QGroupBox()
 		SubtractGroupBox.setTitle('Calculate Subtraction Map')
 		self.__layout.addRow(SubtractGroupBox)
@@ -250,7 +254,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 
 		pNode.SetParameter('subtractVolumeID', subtractVolume.GetID())
 
-		# TO-DO: Understand the math behind interpolation order in image subtraction
+		# TODO: Understand the math behind interpolation order in image subtraction
 		parameters = {}
 		parameters["inputVolume1"] = followupVolume
 		parameters["inputVolume2"] = baselineVolume

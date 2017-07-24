@@ -162,6 +162,7 @@ class VolumeSelectStep(ModelSegmentationStep) :
 
 	def updateWidgetFromParameters(self, parameterNode):
 
+		# Gratuitous
 		pNode = self.parameterNode()
 
 		pNode.SetParameter('baselineVolumeID', '')	

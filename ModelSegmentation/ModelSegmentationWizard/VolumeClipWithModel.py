@@ -97,8 +97,6 @@ class VolumeClipWithModelLogic(ScriptedLoadableModuleLogic):
 		cellArray = vtk.vtkCellArray()
 		
 		numberOfPoints = inputMarkup.GetNumberOfFiducials()
-		
-		print numberOfPoints
 
 		# Surface generation algorithms behave unpredictably when there are not enough points
 		# return if there are very few points

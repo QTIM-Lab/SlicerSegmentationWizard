@@ -53,7 +53,6 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 
 	def onExit( self, goingTo, transitionType ):
 
-		print self.__parameterNode
 		goingToId = "None"
 		if goingTo: 
 			goingToId = goingTo.id()

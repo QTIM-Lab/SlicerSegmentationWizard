@@ -170,10 +170,10 @@ class RegistrationStep( ModelSegmentationStep ) :
 
 	def onRegistrationRequest(self, wait_for_completion=False):
 
-		""" This method makes a call to a different slice module, BRAINSFIT. 
+		""" This method makes a call to a different slicer module, BRAINSFIT. 
 			Note that this registration method computes a transform, which is 
 			then applied to the followup volume in processRegistrationCompletion. 
-			TO-DO: Add a cancel button and a progress bar
+			TO-DO: Add a cancel button and a progress bar.
 		"""
 		if self.__RegistrationRadio1.isChecked():
 			return
@@ -243,7 +243,7 @@ class RegistrationStep( ModelSegmentationStep ) :
 			self.__cliNode = None
 			self.__cliNode = slicer.cli.run(slicer.modules.brainsfit, self.__cliNode, parameters, wait_for_completion=wait_for_completion)
 
-			# An event listener for the CLI. To-Do: Add a progress bar.
+			# An event listener for the CLI. TODO: Add a progress bar.
 			self.__cliObserverTag = self.__cliNode.AddObserver('ModifiedEvent', self.processRegistrationCompletion)
 			self.__registrationStatus.setText('Wait ...')
 			self.__registrationButton.setEnabled(0)
@@ -253,7 +253,6 @@ class RegistrationStep( ModelSegmentationStep ) :
 		""" This updates the registration button with the CLI module's convenient status
 			indicator. Upon completion, it applies the transform to the followup node.
 			Furthermore, it sets the followup node to be the baseline node in the viewer.
-			It also saves the transform node ID in the parameter node.
 		"""
 
 		self.__status = node.GetStatusString()

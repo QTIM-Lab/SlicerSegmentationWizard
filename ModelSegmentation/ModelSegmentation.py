@@ -19,7 +19,10 @@
     normalize images, create automatic 3D ROIs using Delaunay Triangulation, and 
     threshold intensities within an ROI.
 
-    This module was made by Andrew Beers as part of QTIM and QICCR [LINKS]
+    This module was made by Andrew Beers as part of QTIM and QICCR
+    https://www.martinos.org/lab/qtim
+    http://qiicr.org/
+
 """
 
 from __main__ import vtk, qt, ctk, slicer
@@ -38,14 +41,15 @@ class ModelSegmentation():
         """
         parent.title = """Model Segmentation"""
         parent.categories = ["""Segmentation"""]
-        parent.contributors = ["""Andrew Beers"""]
+        parent.contributors = ["""Andrew Beers, QTIM @ MGH [https://www.martinos.org/lab/qtim]"""]
         parent.helpText = """
         This module is meant to create easy and effecient segmentations on high slice
         resolution medical images. It can calculate subtraction maps, register images,
         normalize images, create 3D volumetric ROIs using Delaunay Triangulation, and finally
         threshold intensities within an ROI.
         """;
-        parent.acknowledgementText = """Andrew Beers, QTIM [LINK] [OTHER ACKNOWLEDGEMENTS].
+        parent.acknowledgementText = """ This work was funded by the following grants: U24CA180918, U01CA154601, U24CA180927
+        Templated from ChangeTracker by Andrey Fedorov (BWH).
         """
         self.parent = parent
         self.collapsed = False
@@ -120,7 +124,7 @@ class ModelSegmentationWidget():
             nodeid = None
             if compNode.GetModuleName() == 'ModelSegmentation':
                 self.parameterNode = compNode
-                print 'Found existing ModelSegmentation parameter node'
+                # print 'Found existing ModelSegmentation parameter node'
                 break
         if self.parameterNode == None:
             self.parameterNode = slicer.vtkMRMLScriptedModuleNode()
@@ -129,7 +133,7 @@ class ModelSegmentationWidget():
 
         # Individual workflow steps need to remember the parameter node too.
         for s in allSteps:
-            s.setParameterNode (self.parameterNode)
+            s.setParameterNode(self.parameterNode)
 
         # Restores you to the correct step if you leave and then return to the module.
         currentStep = self.parameterNode.GetParameter('currentStep')

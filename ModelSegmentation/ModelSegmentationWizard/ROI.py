@@ -289,13 +289,6 @@ class ROIStep( ModelSegmentationStep ) :
             Helper.SetBgFgVolumes(pNode.GetParameter('subtractVolumeID'), pNode.GetParameter('followupVolumeID'))
             self.__visualizedVolume = Helper.getNodeByID(pNode.GetParameter('subtractVolumeID'))
 
-        # These may seem redundant - maybe they are - but I think they are useful for
-        # multiple program runs.
-        # if pNode.GetParameter('modelList') == '' or pNode.GetParameter('modelList') == None:
-        #     self.__markupList = []
-        #     self.__modelList = []
-        #     self.__outputList = []
-
         # Gratuitous?
         self.__baselineVolumeID = pNode.GetParameter('baselineVolumeID')
         self.__followupVolumeID = pNode.GetParameter('followupVolumeID')
@@ -403,13 +396,13 @@ class ROIStep( ModelSegmentationStep ) :
 
                     outputVolume.SetName(baselineVolume.GetName() + '_roi_cropped')
 
-            # Update parameter node.
+            # Update parameter node. TODO: Consistent way to save lists to parameter node.
             pNode.SetParameter('clippingModelNodeID', self.__clippingModelNode.GetID())
             pNode.SetParameter('clippingMarkupNodeID', self.__clippingMarkupNode.GetID())
             pNode.SetParameter('outputList', '__'.join(self.__outputList))
             pNode.SetParameter('markupList', '__'.join(self.__markupList))
             pNode.SetParameter('modelList', '__'.join(self.__modelList))
-            pNode.SetParameter('croppedVolumeID',outputVolume.GetID())
+            pNode.SetParameter('croppedVolumeID', outputVolume.GetID())
 
             # Get starting threshold parameters.
             roiRange = outputVolume.GetImageData().GetScalarRange()

@@ -126,7 +126,7 @@ class ReviewStep( ModelSegmentationStep ) :
 
 		""" We import the Editor module wholesale, which is useful, but it means
 			we have to manually hide parts we don't want after the fact..
-			If we could somehow import the segmentations module instaed, that
+			If we could somehow import the segmentations module instead, that
 			might be better. On the other hand, first-time users often don't know
 			how to use the segmentations module.
 		"""
