@@ -3,14 +3,14 @@ import os
 import unittest
 from __main__ import vtk, qt, ctk, slicer
 
-class ModelSegmentationSelfTest:
+class SegmentationWizardSelfTest:
   def __init__(self, parent):
-    parent.title = "ModelSegmentationSelfTest" # TODO make this more human readable by adding spaces
+    parent.title = "SegmentationWizardSelfTest" # TODO make this more human readable by adding spaces
     parent.categories = ["Testing.TestCases"]
-    parent.dependencies = ["ModelSegmentation"]
+    parent.dependencies = ["SegmentationWizard"]
     parent.contributors = ["Andrew Beers (MGH)"] # replace with "Firstname Lastname (Org)"
     parent.helpText = """
-    This module was developed as a self test to perform the operations done in ModelSegmentation module
+    This module was developed as a self test to perform the operations done in SegmentationWizard module
     """
     parent.acknowledgementText = """
     This file was templated off the test case module from ChangeTracker by Andrey Fedorov and Steve Pieper.
@@ -24,17 +24,17 @@ class ModelSegmentationSelfTest:
       slicer.selfTests
     except AttributeError:
       slicer.selfTests = {}
-    slicer.selfTests['ModelSegmentationSelfTestTest'] = self.runTest
+    slicer.selfTests['SegmentationWizardSelfTestTest'] = self.runTest
 
   def runTest(self):
-    tester = ModelSegmentationSelfTestTest()
+    tester = SegmentationWizardSelfTestTest()
     tester.runTest()
 
 #
-# qModelSegmentationTestWidget
+# qSegmentationWizardTestWidget
 #
 
-class ModelSegmentationSelfTestWidget:
+class SegmentationWizardSelfTestWidget:
   def __init__(self, parent = None):
     if not parent:
       self.parent = slicer.qMRMLWidget()
@@ -59,7 +59,7 @@ class ModelSegmentationSelfTestWidget:
     formLayout = qt.QFormLayout(testsCollapsibleButton)
 
     # test buttons
-    tests = ( ("ModelSegmentation", self.ontestModelSegmentation), )
+    tests = ( ("SegmentationWizard", self.ontestSegmentationWizard), )
     for text,slot in tests:
       testButton = qt.QPushButton(text)
       testButton.toolTip = "Run the test."
@@ -69,16 +69,16 @@ class ModelSegmentationSelfTestWidget:
     # Add vertical spacer
     self.layout.addStretch(1)
 
-  def ontestModelSegmentation(self):
-    tester = ModelSegmentationSelfTestTest()
+  def ontestSegmentationWizard(self):
+    tester = SegmentationWizardSelfTestTest()
     tester.setUp()
-    tester.testModelSegmentation()
+    tester.testSegmentationWizard()
 
 #
-# ModelSegmentationTestLogic
+# SegmentationWizardTestLogic
 #
 
-class ModelSegmentationSelfTestLogic:
+class SegmentationWizardSelfTestLogic:
   """This class should implement all the actual 
   computation done by your module.  The interface 
   should be such that other python code can import
@@ -102,7 +102,7 @@ class ModelSegmentationSelfTestLogic:
     return True
 
 
-class ModelSegmentationSelfTestTest(unittest.TestCase):
+class SegmentationWizardSelfTestTest(unittest.TestCase):
   """
   This is the test case for your scripted module.
   """
@@ -136,9 +136,9 @@ class ModelSegmentationSelfTestTest(unittest.TestCase):
     """Run as few or as many tests as needed here.
     """
     self.setUp()
-    self.testModelSegmentation()
+    self.testSegmentationWizard()
 
-  def testModelSegmentation(self):
+  def testSegmentationWizard(self):
     """ Test the ChangeTracker module
     """
     self.delayDisplay("Starting the test")
@@ -163,7 +163,7 @@ class ModelSegmentationSelfTestTest(unittest.TestCase):
         viewNode = threeDView.mrmlViewNode()
         cameras = slicer.util.getNodes('vtkMRMLCameraNode*')
 
-        mainWindow.moduleSelector().selectModule('ModelSegmentation')
+        mainWindow.moduleSelector().selectModule('SegmentationWizard')
         modelsegmentation_module = slicer.modules.modelsegmentation.widgetRepresentation().self()
 
         self.delayDisplay('Select Volumes')

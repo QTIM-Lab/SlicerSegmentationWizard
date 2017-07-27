@@ -15,7 +15,7 @@ class Helper( object ):
 	@staticmethod
 	def Error( message ):
 
-		print "[ModelSegmentation " + time.strftime( "%m/%d/%Y %H:%M:%S" ) + "]: ERROR: " + str( message )
+		print "[SegmentationWizard " + time.strftime( "%m/%d/%Y %H:%M:%S" ) + "]: ERROR: " + str( message )
 		sys.stdout.flush()
 
 	@staticmethod
@@ -30,7 +30,7 @@ class Helper( object ):
 		showDebugOutput = 0
 		from time import strftime
 		if showDebugOutput:
-			print "[ModelSegmentation " + time.strftime( "%m/%d/%Y %H:%M:%S" ) + "] DEBUG: " + str( message )
+			print "[SegmentationWizard " + time.strftime( "%m/%d/%Y %H:%M:%S" ) + "] DEBUG: " + str( message )
 			sys.stdout.flush()
 
 	@staticmethod

@@ -4,14 +4,14 @@
 
 from __main__ import qt, ctk, slicer
 
-from ModelSegmentationStep import *
+from SegmentationWizardStep import *
 from Helper import *
 
-""" RegistrationStep inherits from ModelSegmentationStep, with itself inherits
+""" RegistrationStep inherits from SegmentationWizardStep, with itself inherits
 	from a ctk workflow class. 
 """
 
-class RegistrationStep( ModelSegmentationStep ) :
+class RegistrationStep( SegmentationWizardStep ) :
 	
 	def __init__( self, stepid ):
 
@@ -166,7 +166,7 @@ class RegistrationStep( ModelSegmentationStep ) :
 
 	def onExit(self, goingTo, transitionType):
 
-		super(ModelSegmentationStep, self).onExit(goingTo, transitionType) 
+		super(SegmentationWizardStep, self).onExit(goingTo, transitionType) 
 
 	def onRegistrationRequest(self, wait_for_completion=False):
 

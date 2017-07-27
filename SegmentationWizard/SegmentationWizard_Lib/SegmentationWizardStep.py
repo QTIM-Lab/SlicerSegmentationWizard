@@ -11,7 +11,7 @@ from __main__ import qt, ctk
 # Imports functions for the parameter node.
 from slicer.ScriptedLoadableModule import *
 
-class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
+class SegmentationWizardStep( ctk.ctkWorkflowWidgetStep ) :
 
 	def __init__( self, stepid ):
 
@@ -49,7 +49,7 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 
 		# print "-> onEntry - current [%s] - comingFrom [%s]" % ( self.id(), comingFromId )
 
-		super( ModelSegmentationStep, self ).onEntry( comingFrom, transitionType )
+		super( SegmentationWizardStep, self ).onEntry( comingFrom, transitionType )
 
 	def onExit( self, goingTo, transitionType ):
 
@@ -58,7 +58,7 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 			goingToId = goingTo.id()
 		# print "-> onExit - current [%s] - goingTo [%s]" % ( self.id(), goingToId )
 
-		super( ModelSegmentationStep, self ).onExit( goingTo, transitionType )
+		super( SegmentationWizardStep, self ).onExit( goingTo, transitionType )
 
 	def validate( self, desiredBranchId ):
 		
@@ -71,10 +71,10 @@ class ModelSegmentationStep( ctk.ctkWorkflowWidgetStep ) :
 
 	def validationSucceeded( self, desiredBranchId ):
 
-		super( ModelSegmentationStep, self ).validate( True, desiredBranchId )
+		super( SegmentationWizardStep, self ).validate( True, desiredBranchId )
 
 	def validationFailed( self, desiredBranchId, messageTitle='Error', messageText='There was an unknown error. See the console output for more details!' ):
 		
 		messageBox = qt.QMessageBox.warning( self, messageTitle, messageText )
-		super( ModelSegmentationStep, self ).validate( False, desiredBranchId )
+		super( SegmentationWizardStep, self ).validate( False, desiredBranchId )
 

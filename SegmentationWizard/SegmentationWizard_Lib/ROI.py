@@ -15,18 +15,18 @@
 
 from __main__ import qt, ctk, slicer
 
-from ModelSegmentationStep import *
+from SegmentationWizardStep import *
 from Helper import *
 import PythonQt
 import os 
 from VolumeClipWithModel import *
 
-""" ROIStep inherits from ModelSegmentationStep, with itself inherits
+""" ROIStep inherits from SegmentationWizardStep, with itself inherits
     from a ctk workflow class. PythonQT is required for this step
     in order to get the ROI selector widget.
 """
 
-class ROIStep( ModelSegmentationStep ) :
+class ROIStep( SegmentationWizardStep ) :
 
     def __init__( self, stepid ):
 

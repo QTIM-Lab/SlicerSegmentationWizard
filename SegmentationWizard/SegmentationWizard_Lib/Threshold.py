@@ -4,16 +4,16 @@
 
 from __main__ import qt, ctk, slicer
 
-from ModelSegmentationStep import *
+from SegmentationWizardStep import *
 from Helper import *
 
 import string
 
-""" ThresholdStep inherits from ModelSegmentationStep, with itself inherits
+""" ThresholdStep inherits from SegmentationWizardStep, with itself inherits
 	from a ctk workflow class. 
 """
 
-class ThresholdStep( ModelSegmentationStep ) :
+class ThresholdStep( SegmentationWizardStep ) :
 
 	def __init__( self, stepid ):
 
@@ -192,7 +192,7 @@ class ThresholdStep( ModelSegmentationStep ) :
 		pNode.SetParameter('vrThreshRangeMin', str(roiRange.minimumValue))
 		pNode.SetParameter('vrThreshRangeMax', str(roiRange.maximumValue))
 
-		super(ModelSegmentationStep, self).onExit(goingTo, transitionType) 
+		super(SegmentationWizardStep, self).onExit(goingTo, transitionType) 
 
 	def InitVRDisplayNode(self):
 

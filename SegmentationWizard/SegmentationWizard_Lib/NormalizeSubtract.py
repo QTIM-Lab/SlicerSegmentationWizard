@@ -6,14 +6,14 @@
 
 from __main__ import qt, ctk, slicer
 
-from ModelSegmentationStep import *
+from SegmentationWizardStep import *
 from Helper import *
 
-""" NormalizeSubtractStep inherits from ModelSegmentationStep, with itself inherits
+""" NormalizeSubtractStep inherits from SegmentationWizardStep, with itself inherits
 	from a ctk workflow class. 
 """
 
-class NormalizeSubtractStep( ModelSegmentationStep ) :
+class NormalizeSubtractStep( SegmentationWizardStep ) :
 
 	def __init__( self, stepid ):
 
@@ -146,7 +146,7 @@ class NormalizeSubtractStep( ModelSegmentationStep ) :
 
 	def onExit(self, goingTo, transitionType):
 
-		super(ModelSegmentationStep, self).onExit(goingTo, transitionType) 
+		super(SegmentationWizardStep, self).onExit(goingTo, transitionType) 
 
 	def onGaussianNormalizationRequest(self):
 

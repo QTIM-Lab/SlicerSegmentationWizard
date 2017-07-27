@@ -4,14 +4,14 @@
 
 from __main__ import qt, ctk, slicer
 
-from ModelSegmentationStep import *
+from SegmentationWizardStep import *
 from Helper import *
 
-""" VolumeSelectStep inherits from ModelSegmentationStep, with itself inherits
+""" VolumeSelectStep inherits from SegmentationWizardStep, with itself inherits
 	from a ctk workflow class. 
 """
 
-class VolumeSelectStep(ModelSegmentationStep) :
+class VolumeSelectStep(SegmentationWizardStep) :
 
 	def __init__(self, stepid):
 
@@ -158,7 +158,7 @@ class VolumeSelectStep(ModelSegmentationStep) :
 
 	def onExit(self, goingTo, transitionType):   
 
-		super(ModelSegmentationStep, self).onExit(goingTo, transitionType) 
+		super(SegmentationWizardStep, self).onExit(goingTo, transitionType) 
 
 	def updateWidgetFromParameters(self, parameterNode):
 

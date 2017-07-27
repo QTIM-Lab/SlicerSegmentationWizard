@@ -1,6 +1,6 @@
-""" This file is picked up by 3D Slicer and used to create a widget. ModelSegmentation
+""" This file is picked up by 3D Slicer and used to create a widget. SegmentationWizard
     (the class) specifies the Help and Acknowledgements qt box seen in Slicer.
-    ModelSegmentationWidget start the main action of the module, creating a workflow
+    SegmentationWizardWidget start the main action of the module, creating a workflow
     from ctk and creating initial links to Slicer's MRML data. Most of this
     module is modeled after ChangeTracker by Andrey Fedorov, which can be found in
     the following GitHub repository: https://github.com/fedorov/ChangeTrackerPy
@@ -10,7 +10,7 @@
     step-by-step workflow, qt is a popular user interface library, and Slicer is a
     python library that helps developers hook into the 3D Slicer codebase.
     The program 3D Slicer has access to these libraries (and more), and is
-    referenced here as __main__. ModelSegmentationWizard is a folder that 
+    referenced here as __main__. SegmentationWizard_Lib is a folder that 
     contains the individual steps of the workflow and does most of the computational
     work. 
 
@@ -28,9 +28,9 @@
 from __main__ import vtk, qt, ctk, slicer
 import os
 
-import ModelSegmentationWizard
+import SegmentationWizard_Lib
 
-class ModelSegmentation():
+class SegmentationWizard():
 
     def __init__( self, parent ):
 
@@ -39,7 +39,7 @@ class ModelSegmentation():
             Modifications to the parent result in modifications to the qt box that 
             then prints the relevant information.
         """
-        parent.title = """Model Segmentation"""
+        parent.title = """Segmentation Wizard"""
         parent.categories = ["""Segmentation"""]
         parent.contributors = ["""Andrew Beers, QTIM @ MGH [https://www.martinos.org/lab/qtim]"""]
         parent.helpText = """
@@ -49,12 +49,12 @@ class ModelSegmentation():
         threshold intensities within an ROI.
         """;
         parent.acknowledgementText = """ This work was funded by the following grants: U24CA180918, U01CA154601, U24CA180927
-        Templated from ChangeTracker by Andrey Fedorov (BWH).
+        Module templated from ChangeTracker by Andrey Fedorov (BWH).
         """
         self.parent = parent
         self.collapsed = False
 
-class ModelSegmentationWidget():
+class SegmentationWizardWidget():
 
     def __init__( self, parent=None ):
         """ It seems to be that Slicer creates an instance of this class with a
@@ -75,7 +75,7 @@ class ModelSegmentationWidget():
         """ Slicer seems to call all methods of these classes upon entry. setup creates
             a workflow from ctk, which simply means that it creates a series of UI
             steps one can traverse with "next" / "previous" buttons. The steps themselves
-            are contained within ModelSegmentationWizard.
+            are contained within SegmentationWizard_Lib.
         """
 
         # Currently unclear on the difference between ctkWorkflow and
@@ -86,12 +86,12 @@ class ModelSegmentationWidget():
         workflowWidget.setWorkflow( self.workflow )
 
         # Create workflow steps.
-        self.Step1 = ModelSegmentationWizard.VolumeSelectStep('VolumeSelectStep')
-        self.Step2 = ModelSegmentationWizard.RegistrationStep('RegistrationStep')
-        self.Step3 = ModelSegmentationWizard.NormalizeSubtractStep('NormalizeSubtractStep')
-        self.Step4 = ModelSegmentationWizard.ROIStep('ROIStep')
-        self.Step5 = ModelSegmentationWizard.ThresholdStep('ThresholdStep')
-        self.Step6 = ModelSegmentationWizard.ReviewStep('ReviewStep')
+        self.Step1 = SegmentationWizard_Lib.VolumeSelectStep('VolumeSelectStep')
+        self.Step2 = SegmentationWizard_Lib.RegistrationStep('RegistrationStep')
+        self.Step3 = SegmentationWizard_Lib.NormalizeSubtractStep('NormalizeSubtractStep')
+        self.Step4 = SegmentationWizard_Lib.ROIStep('ROIStep')
+        self.Step5 = SegmentationWizard_Lib.ThresholdStep('ThresholdStep')
+        self.Step6 = SegmentationWizard_Lib.ReviewStep('ReviewStep')
 
         # Add the wizard steps to an array for convenience. Much of the following code
         # is copied wholesale from ChangeTracker.
@@ -114,7 +114,7 @@ class ModelSegmentationWidget():
         """ The following code creates a 'parameter node' from the vtkMRMLScriptedModuleNode class. 
             A parameter node keeps track of module variables from step to step, in the case of
             ctkWorkflow, and when users leave the module to visit other modules. The code below
-            searches to see if a parameter node already exists for ModelSegmentation among all
+            searches to see if a parameter node already exists for SegmentationWizard among all
             available parameter nodes, and then creates one if it does not.
         """
         nNodes = slicer.mrmlScene.GetNumberOfNodesByClass('vtkMRMLScriptedModuleNode')
@@ -122,13 +122,13 @@ class ModelSegmentationWidget():
         for n in xrange(nNodes):
             compNode = slicer.mrmlScene.GetNthNodeByClass(n, 'vtkMRMLScriptedModuleNode')
             nodeid = None
-            if compNode.GetModuleName() == 'ModelSegmentation':
+            if compNode.GetModuleName() == 'SegmentationWizard':
                 self.parameterNode = compNode
-                # print 'Found existing ModelSegmentation parameter node'
+                # print 'Found existing SegmentationWizard parameter node'
                 break
         if self.parameterNode == None:
             self.parameterNode = slicer.vtkMRMLScriptedModuleNode()
-            self.parameterNode.SetModuleName('ModelSegmentation')
+            self.parameterNode.SetModuleName('SegmentationWizard')
             slicer.mrmlScene.AddNode(self.parameterNode)
 
         # Individual workflow steps need to remember the parameter node too.
@@ -138,7 +138,7 @@ class ModelSegmentationWidget():
         # Restores you to the correct step if you leave and then return to the module.
         currentStep = self.parameterNode.GetParameter('currentStep')
         if currentStep != '':
-            print 'Restoring ModelSegmentation workflow step to ', currentStep
+            print 'Restoring SegmentationWizard workflow step to ', currentStep
             if currentStep == 'VolumeSelectStep':
                 self.workflow.setInitialStep(self.Step1)
             if currentStep == 'RegistrationStep':
@@ -163,13 +163,13 @@ class ModelSegmentationWidget():
         """ A quick check to see if the file was loaded. Can be seen in the Python Interactor.
         """
 
-        # import ModelSegmentation
+        # import SegmentationWizard
         # print "Model Segmentation Module Correctly Entered"
 
-        # test = ModelSegmentationTest()
+        # test = SegmentationWizardTest()
         # test.runTest()
 
-class ModelSegmentationTest():
+class SegmentationWizardTest():
 
   def delayDisplay(self,message,msec=1000):
     """This utility method displays a small dialog and waits.
@@ -198,9 +198,9 @@ class ModelSegmentationTest():
     """Run as few or as many tests as needed here.
     """
     self.setUp()
-    self.testModelSegmentation()
+    self.testSegmentationWizard()
 
-  def testModelSegmentation(self):
+  def testSegmentationWizard(self):
     """ Test the ChangeTracker module
     """
     self.delayDisplay("Starting the test")
@@ -225,7 +225,7 @@ class ModelSegmentationTest():
         viewNode = threeDView.mrmlViewNode()
         cameras = slicer.util.getNodes('vtkMRMLCameraNode*')
 
-        mainWindow.moduleSelector().selectModule('ModelSegmentation')
+        mainWindow.moduleSelector().selectModule('SegmentationWizard')
         modelsegmentation_module = slicer.modules.modelsegmentation.widgetRepresentation().self()
 
         self.delayDisplay('Select Volumes')

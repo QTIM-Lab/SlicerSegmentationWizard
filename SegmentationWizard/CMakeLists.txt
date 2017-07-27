@@ -1,5 +1,5 @@
 #-----------------------------------------------------------------------------
-set(MODULE_NAME ModelSegmentation)
+set(MODULE_NAME SegmentationWizard)
 
 #-----------------------------------------------------------------------------
 set(MODULE_PYTHON_SCRIPTS

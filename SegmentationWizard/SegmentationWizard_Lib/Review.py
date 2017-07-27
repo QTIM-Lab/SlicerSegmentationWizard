@@ -7,18 +7,18 @@
 
 from __main__ import qt, ctk, slicer
 
-from ModelSegmentationStep import *
+from SegmentationWizardStep import *
 from Helper import *
 from Editor import EditorWidget
 from EditorLib import EditorLib
 
 import string
 
-""" ReviewStep inherits from ModelSegmentationStep, with itself inherits
+""" ReviewStep inherits from SegmentationWizardStep, with itself inherits
 	from a ctk workflow class. 
 """
 
-class ReviewStep( ModelSegmentationStep ) :
+class ReviewStep( SegmentationWizardStep ) :
 
 	def __init__( self, stepid ):
 
@@ -329,4 +329,4 @@ class ReviewStep( ModelSegmentationStep ) :
 
 		self.__DefaultToolButton.click()
 
-		super(ModelSegmentationStep, self).onExit(goingTo, transitionType) 
+		super(SegmentationWizardStep, self).onExit(goingTo, transitionType) 
