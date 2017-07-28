@@ -8,8 +8,8 @@ set(EXTENSION_HOMEPAGE "http://slicer.org/slicerWiki/index.php/Documentation/Nig
 set(EXTENSION_CATEGORY "Segmentation")
 set(EXTENSION_CONTRIBUTORS "Andrew Beers (Massachussetts General Hospital)")
 set(EXTENSION_DESCRIPTION "A semi-automatic high-resolution segmentation workflow built for 3D Slicer. It includes utilities for calculating subtraction maps and thresholding intensity values.")
-set(EXTENSION_ICONURL "https://raw.githubusercontent.com/QTIM-Lab/3D_Model_Segmentation/master/SegmentationWizard/Resources/Icons/SegmentationWizard.png")
-set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/QTIM-Lab/3D_Model_Segmentation/master/SegmentationWizard/Resources/Icons/SegmentationWizard.png")
+set(EXTENSION_ICONURL "https://raw.githubusercontent.com/QTIM-Lab/SlicerSegmentationWizard/master/SegmentationWizard/Resources/Icons/SegmentationWizard.png")
+set(EXTENSION_SCREENSHOTURLS "https://raw.githubusercontent.com/QTIM-Lab/SlicerSegmentationWizard/master/SegmentationWizard/Resources/Icons/SegmentationWizard.png")
 set(EXTENSION_DEPENDS "NA") # Specified as a space separated string, a list or 'NA' if any
 
 #-----------------------------------------------------------------------------
