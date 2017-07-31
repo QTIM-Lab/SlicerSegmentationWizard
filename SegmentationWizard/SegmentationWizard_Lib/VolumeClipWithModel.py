@@ -1,5 +1,5 @@
 from __main__ import qt, ctk, slicer
-from ModelSegmentationStep import *
+from SegmentationWizardStep import *
 from Helper import *
 
 class VolumeClipWithModelLogic(ScriptedLoadableModuleLogic):

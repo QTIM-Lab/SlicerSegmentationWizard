@@ -138,7 +138,7 @@ class SegmentationWizardWidget():
         # Restores you to the correct step if you leave and then return to the module.
         currentStep = self.parameterNode.GetParameter('currentStep')
         if currentStep != '':
-            print 'Restoring SegmentationWizard workflow step to ', currentStep
+            # print 'Restoring SegmentationWizard workflow step to ', currentStep
             if currentStep == 'VolumeSelectStep':
                 self.workflow.setInitialStep(self.Step1)
             if currentStep == 'RegistrationStep':
@@ -152,7 +152,8 @@ class SegmentationWizardWidget():
             if currentStep == 'ReviewStep':
                 self.workflow.setInitialStep(self.Step4)
         else:
-            print 'currentStep in parameter node is empty!'
+            # print 'currentStep in parameter node is empty!'
+            pass
 
         # Starts and show the workflow.
         self.workflow.start()
